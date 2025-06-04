@@ -1,3 +1,4 @@
+from datetime import datetime
 from collections import UserDict
 from typing import Union
 
@@ -27,10 +28,23 @@ class Phone(Field):
         super().__init__(value)
 
 
+class Birthday(Field):
+    def __init__(self, value):
+        try:
+            self.birthday = datetime.strptime(value, "%d.%M.%Y")
+        except ValueError:
+            raise ValueError("Invalid date format. Use DD.MM.YYYY")
+
+
 class Record:
     def __init__(self, name):
         self.name = Name(name)
         self.phones = []
+        self.birthday = None
+
+
+    def add_birthday(self, birthday: str):
+        ...
 
 
     def add_phone(self, phone: str):
