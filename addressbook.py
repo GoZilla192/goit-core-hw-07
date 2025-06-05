@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime, date, timedelta
 from collections import UserDict
 from typing import Union
 
@@ -31,7 +31,7 @@ class Phone(Field):
 class Birthday(Field):
     def __init__(self, value):
         try:
-            self.birthday = datetime.strptime(value, "%d.%M.%Y")
+            self.value = datetime.strptime(value, "%d.%m.%Y").date()
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
@@ -44,7 +44,7 @@ class Record:
 
 
     def add_birthday(self, birthday: str):
-        ...
+        self.birthday = Birthday(birthday)
 
 
     def add_phone(self, phone: str):
@@ -72,7 +72,7 @@ class Record:
 
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}"
+        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value}"
 
 
     def __repr__(self):
@@ -94,4 +94,38 @@ class AddressBook(UserDict):
 
     def __str__(self):
         return f"AddressBook {self.data}"
+
+
+    def _find_next_weekday(self, start_date, weekday):
+        days_ahead = weekday - start_date.weekday()
+        if days_ahead <= 0:
+            days_ahead += 7
+        return start_date + timedelta(days=days_ahead)
+
+
+    def _adjust_for_weekend(self, birthday):
+        if birthday.weekday() >= 5:
+            return self._find_next_weekday(birthday, 0)
+        
+        return birthday
+
+    def get_upcoming_birthdays(self, days=7):
+        upcoming_birthdays = []
+        today = date.today()
+
+        for name, record in self.data.items():
+            birthday_this_year = record.birthday.value
+            birthday_this_year = birthday_this_year.replace(year=today.year)
+ 
+            if birthday_this_year < today:
+                birthday_this_year = birthday_this_year.replace(year=birthday_this_year.year + 1)
+           
+            if 0 <= (birthday_this_year - today).days <= days:
+                birthday_this_year = self._adjust_for_weekend(birthday_this_year)
+                
+                congratulation_date_str = birthday_this_year.strftime("%Y.%m.%d")
+                upcoming_birthdays.append({"name": name, "congratulation_date": congratulation_date_str})
+
+
+        return upcoming_birthdays
     
