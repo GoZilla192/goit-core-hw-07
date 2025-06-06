@@ -27,6 +27,7 @@ class Phone(Field):
 
         super().__init__(value)
 
+    
 
 class Birthday(Field):
     def __init__(self, value):
@@ -35,6 +36,10 @@ class Birthday(Field):
         except ValueError:
             raise ValueError("Invalid date format. Use DD.MM.YYYY")
 
+
+    def __str__(self):
+        return f"{self.value}"
+    
 
 class Record:
     def __init__(self, name):
@@ -61,7 +66,8 @@ class Record:
         for i, phone in enumerate(self.phones):
             if phone.value == old_phone:
                 self.phones[i] = Phone(new_phone)
-
+                return 
+            
         raise ValueError(f"Phone number {old_phone} does not exist")
     
 
@@ -72,7 +78,7 @@ class Record:
 
 
     def __str__(self):
-        return f"Contact name: {self.name.value}, phones: {'; '.join(p.value for p in self.phones)}, birthday: {self.birthday.value}"
+        return f"Contact name: {self.name.value}; phones: {', '.join(p.value for p in self.phones)}; birthday: {self.birthday}"
 
 
     def __repr__(self):
@@ -109,11 +115,14 @@ class AddressBook(UserDict):
         
         return birthday
 
-    def get_upcoming_birthdays(self, days=7):
+    def get_upcoming_birthdays(self, days) -> list[dict]:
         upcoming_birthdays = []
         today = date.today()
 
         for name, record in self.data.items():
+            if record.birthday is None:
+                continue
+
             birthday_this_year = record.birthday.value
             birthday_this_year = birthday_this_year.replace(year=today.year)
  

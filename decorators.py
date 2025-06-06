@@ -1,10 +1,11 @@
 def input_error(func):
     def inner(*args, **kwargs):
+        message = ""
         try:
-            return func(*args, **kwargs)
+            message = func(*args, **kwargs)
         except (KeyError, ValueError, IndexError):
-            print(f"Enter the argument for the command")
-       
+            message = "Invalid input, please check the correctness arguments."
 
+        return message
     return inner
 

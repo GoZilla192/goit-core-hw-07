@@ -1,39 +1,10 @@
 from colorama import Fore
-
-
-def parse_input(user_input):
-    cmd, *args = user_input.split()
-    cmd = cmd.strip().lower()
-    return cmd, *args
-
-
-def add_contact(args, contacts):
-    name, phone = args
-    contacts[name] = phone
-    return "Contact added."
-
-
-def change_contact(args, contacts):
-    name, phone = args
-    contacts[name] = phone
-    return "Contact changed."
-
-
-def show_phone(args, contacts):
-    phone = args[0]
-    return contacts[phone]
-
-
-def show_contacts(contacts):
-    result = ""
-    for username, phone in contacts.items():
-        result += f"\n{username}: {phone}" if result else f"{username}: {phone}"
-
-    return f"All contacts:\n{result}"
+from addressbook import AddressBook, Record
+from events import *
 
 
 def main():
-    contacts = {}
+    book = AddressBook()
     print("Hello, I your assistent, enter command")
 
     while True:
@@ -48,17 +19,26 @@ def main():
             print("How can I help you?")
 
         elif command == "add":
-            print(add_contact(args, contacts))
-
+            print(add_contact(args, book))
+        
         elif command == "change":
-            print(change_contact(args, contacts))
+            print(change_contact(args, book))
 
         elif command == "phone":
-            print(show_phone(args, contacts))
+            print(show_phone(args, book))
 
         elif command == "all":
-            print(show_contacts(contacts))
+            print(show_contacts(book))
+        
+        elif command == "add-birthday":
+            print(add_birthday(args, book))
+        
+        elif command == "show-birthday":
+            print(show_birthday(args, book))
 
+        elif command == "birthdays":
+            print(birthdays(book))
+        
         else:
             print("Invalid command.")
 
