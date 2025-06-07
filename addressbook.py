@@ -115,7 +115,7 @@ class AddressBook(UserDict):
         
         return birthday
 
-    def get_upcoming_birthdays(self, days) -> list[dict]:
+    def get_upcoming_birthdays(self) -> list[dict]:
         upcoming_birthdays = []
         today = date.today()
 
@@ -129,7 +129,7 @@ class AddressBook(UserDict):
             if birthday_this_year < today:
                 birthday_this_year = birthday_this_year.replace(year=birthday_this_year.year + 1)
            
-            if 0 <= (birthday_this_year - today).days <= days:
+            if 0 <= (birthday_this_year - today).days <= 7:
                 birthday_this_year = self._adjust_for_weekend(birthday_this_year)
                 
                 congratulation_date_str = birthday_this_year.strftime("%Y.%m.%d")
